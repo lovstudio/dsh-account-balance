@@ -1,21 +1,21 @@
 /**
- * The task-pulse card: a compact bottom-right status panel registered in the
- * root `shell.overlay` seat. It polls the Host `taskPulse` Remote every 3
+ * The account-balance card: a compact bottom-right status panel registered in the
+ * root `shell.overlay` seat. It polls the Host `accountBalance` Remote every 3
  * seconds for the live snapshot and every 60 seconds for provider quotas.
- * @module @lovstudio/dsh-task-pulse/client/card
+ * @module @lovstudio/dsh-account-balance/client/card
  */
 
 import React from 'react'
 import type { ClientRemote } from '@deepseek-ai/dsh-api-remotes/client'
-import type { TaskPulseQuotaSnapshot, TaskPulseStatusSnapshot, TaskPulseWindow } from '../types.ts'
+import type { AccountBalanceQuotaSnapshot, AccountBalanceStatusSnapshot, AccountBalanceWindow } from '../types.ts'
 
-/** The mounted `taskPulse` Remote namespace, injected by the slot registrar. */
-export type TaskPulseRemoteFace = ClientRemote['taskPulse']
+/** The mounted `accountBalance` Remote namespace, injected by the slot registrar. */
+export type AccountBalanceRemoteFace = ClientRemote['accountBalance']
 
 /** Slot-injected face of the card component. */
-export interface TaskPulseCardProps {
+export interface AccountBalanceCardProps {
   /** The mounted Remote namespace (status + quotas calls). */
-  readonly taskPulse: TaskPulseRemoteFace
+  readonly accountBalance: AccountBalanceRemoteFace
 }
 
 /** Status poll cadence. */
@@ -58,7 +58,7 @@ function formatClock(ts: number): string {
 }
 
 /** One line of the bar tooltip. */
-function windowTip(label: string, win: TaskPulseWindow, status: string): string[] {
+function windowTip(label: string, win: AccountBalanceWindow, status: string): string[] {
   if (status === 'no-key') return [`${label}  未配置密钥`]
   if (status === 'error') return [`${label}  查询失败`]
   if (status === 'no-data') return [`${label}  无数据`]
@@ -87,37 +87,37 @@ function windowTip(label: string, win: TaskPulseWindow, status: string): string[
 }
 
 /** One 5px bar with a hover tooltip. */
-function Bar(props: { label: string; win: TaskPulseWindow; status: string }): React.ReactElement {
+function Bar(props: { label: string; win: AccountBalanceWindow; status: string }): React.ReactElement {
   const pct = clamp(toNumber(props.win.pct))
   const lines = windowTip(props.label, props.win, props.status)
   return React.createElement(
     'div',
-    { className: 'tp-bar-wrap' },
+    { className: 'ab-bar-wrap' },
     React.createElement(
       'div',
-      { className: 'tp-bar' },
+      { className: 'ab-bar' },
       React.createElement('div', {
-        className: 'tp-bar-fill',
+        className: 'ab-bar-fill',
         style: { width: `${pct}%`, background: barColor(pct) },
       }),
     ),
     React.createElement(
       'div',
-      { className: 'tp-tip' },
+      { className: 'ab-tip' },
       lines.map((line, index) => React.createElement('div', { key: index }, line)),
     ),
   )
 }
 
 /** A two-window provider row (GLM / KIMI). */
-function WindowsRow(props: { label: string; row: TaskPulseQuotaSnapshot['rows']['glm'] }): React.ReactElement {
+function WindowsRow(props: { label: string; row: AccountBalanceQuotaSnapshot['rows']['glm'] }): React.ReactElement {
   return React.createElement(
     'div',
-    { className: 'tp-row' },
-    React.createElement('span', { className: 'tp-label' }, props.label),
+    { className: 'ab-row' },
+    React.createElement('span', { className: 'ab-label' }, props.label),
     React.createElement(
       'div',
-      { className: 'tp-bars' },
+      { className: 'ab-bars' },
       React.createElement(Bar, { label: '5小时窗口', win: props.row.windows.w5, status: props.row.status }),
       React.createElement(Bar, { label: '本周配额', win: props.row.windows.week, status: props.row.status }),
     ),
@@ -127,7 +127,7 @@ function WindowsRow(props: { label: string; row: TaskPulseQuotaSnapshot['rows'][
 /** A balance provider row (OpenRouter / DeepSeek). */
 function BalanceRow(props: {
   label: string
-  row: TaskPulseQuotaSnapshot['rows']['or']
+  row: AccountBalanceQuotaSnapshot['rows']['or']
   symbol: string
   digits: number
 }): React.ReactElement {
@@ -136,21 +136,21 @@ function BalanceRow(props: {
     : '—'
   return React.createElement(
     'div',
-    { className: 'tp-row' },
-    React.createElement('span', { className: 'tp-label' }, props.label),
-    React.createElement('span', { className: 'tp-value' }, text),
+    { className: 'ab-row' },
+    React.createElement('span', { className: 'ab-label' }, props.label),
+    React.createElement('span', { className: 'ab-value' }, text),
   )
 }
 
 /** The bottom-right status card. */
-export function TaskPulseCard(props: TaskPulseCardProps): React.ReactElement {
-  const [status, setStatus] = React.useState<TaskPulseStatusSnapshot>({ sessions: 0, tasks: 0 })
-  const [quotas, setQuotas] = React.useState<TaskPulseQuotaSnapshot | null>(null)
+export function AccountBalanceCard(props: AccountBalanceCardProps): React.ReactElement {
+  const [status, setStatus] = React.useState<AccountBalanceStatusSnapshot>({ sessions: 0, tasks: 0 })
+  const [quotas, setQuotas] = React.useState<AccountBalanceQuotaSnapshot | null>(null)
 
   React.useEffect(() => {
     let alive = true
     const poll = (): void => {
-      props.taskPulse.status().then((result) => {
+      props.accountBalance.status().then((result) => {
         if (alive && result.ok) setStatus(result.value)
       }).catch(() => {})
     }
@@ -160,12 +160,12 @@ export function TaskPulseCard(props: TaskPulseCardProps): React.ReactElement {
       alive = false
       window.clearInterval(timer)
     }
-  }, [props.taskPulse])
+  }, [props.accountBalance])
 
   React.useEffect(() => {
     let alive = true
     const poll = (): void => {
-      props.taskPulse.quotas().then((result) => {
+      props.accountBalance.quotas().then((result) => {
         if (alive && result.ok) setQuotas(result.value)
       }).catch(() => {})
     }
@@ -175,7 +175,7 @@ export function TaskPulseCard(props: TaskPulseCardProps): React.ReactElement {
       alive = false
       window.clearInterval(timer)
     }
-  }, [props.taskPulse])
+  }, [props.accountBalance])
 
   const busy = status.tasks > 0
   const headText = busy
@@ -183,11 +183,11 @@ export function TaskPulseCard(props: TaskPulseCardProps): React.ReactElement {
     : '空闲'
   return React.createElement(
     'div',
-    { className: 'tp-card' },
+    { className: 'ab-card' },
     React.createElement(
       'div',
-      { className: 'tp-head' },
-      React.createElement('span', { className: busy ? 'tp-dot busy' : 'tp-dot' }),
+      { className: 'ab-head' },
+      React.createElement('span', { className: busy ? 'ab-dot busy' : 'ab-dot' }),
       React.createElement('span', null, headText),
     ),
     quotas === null ? null : React.createElement(

@@ -1,4 +1,4 @@
-# @lovstudio/dsh-task-pulse
+# @lovstudio/dsh-account-balance
 
 [English](README.md) | 中文
 
@@ -8,15 +8,15 @@ DeepSeek Harness Web 界面右下角常驻的任务状态卡片。它挂在根 `
 - GLM / KIMI 两行 5px 配额横道——5 小时窗口与本周配额——按 <50% 绿 / ≥50% 橙 / ≥80% 红着色，悬停显示已用、剩余与重置倒计时；
 - OpenRouter（美元）与 DeepSeek（人民币）剩余余额，每 60 秒经 Host 侧 55 秒缓存轮询。
 
-Host 半边暴露两个 Typert Remote：`taskPulse.status` 与 `taskPulse.quotas`。`status` 是纯内存快照（`ctx.agents.list()` + `ctx.jobs.list()`），绝不扫描会话日志，因此 3 秒轮询在 Host 侧亚毫秒级返回，不会卡住用户消息。`quotas` 将四个 provider 请求并行发出并缓存 55 秒；所有外部数值在 wire 边界归一化，行对象严格按 mode 定形，Remote JSON 永不携带 `undefined` 字段。provider 密钥每次操作经 `ctx.credentials` 解析（`ZAI_CODING_CN_API_KEY`、`KIMI_CODING_API_KEY`、`OPENROUTER_API_KEY`、`DEEPSEEK_API_KEY`），绝不离开 Host。
+Host 半边暴露两个 Typert Remote：`accountBalance.status` 与 `accountBalance.quotas`。`status` 是纯内存快照（`ctx.agents.list()` + `ctx.jobs.list()`），绝不扫描会话日志，因此 3 秒轮询在 Host 侧亚毫秒级返回，不会卡住用户消息。`quotas` 将四个 provider 请求并行发出并缓存 55 秒；所有外部数值在 wire 边界归一化，行对象严格按 mode 定形，Remote JSON 永不携带 `undefined` 字段。provider 密钥每次操作经 `ctx.credentials` 解析（`ZAI_CODING_CN_API_KEY`、`KIMI_CODING_API_KEY`、`OPENROUTER_API_KEY`、`DEEPSEEK_API_KEY`），绝不离开 Host。
 
 ## 服务 API
 
-### `taskPulse.status(): Promise<RemoteResult<TaskPulseStatusSnapshot>>`
+### `accountBalance.status(): Promise<RemoteResult<AccountBalanceStatusSnapshot>>`
 
 进程实时状态：`{ sessions, tasks }`——去重后的活跃会话 id 数与当前处于 `running` 的后台任务数。
 
-### `taskPulse.quotas(): Promise<RemoteResult<TaskPulseQuotaSnapshot>>`
+### `accountBalance.quotas(): Promise<RemoteResult<AccountBalanceQuotaSnapshot>>`
 
 四 provider 快照：`{ at, rows: { glm, kimi, or, ds } }`。窗口行（`glm`、`kimi`）携带 `mode: 'windows'` 与 `windows.w5`、`windows.week`；余额行（`or`、`ds`）携带 `mode: 'balance'` 与 `balance`、`detail`。每行都带 `status`：`ok` | `no-key` | `no-data` | `error`。
 

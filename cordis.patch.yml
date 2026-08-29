@@ -1,7 +1,7 @@
-# Task-pulse: one package with a Host Remote face and a browser card. The
+# Account-balance: one package with a Host Remote face and a browser card. The
 # Host half snapshots live agents/jobs and the four provider quotas; the web
 # table serves the browser half from the same package (dsh.client metadata).
 
 - insert:
-    - id: ui-task-pulse
-      name: '@lovstudio/dsh-task-pulse'
+    - id: ui-account-balance
+      name: '@lovstudio/dsh-account-balance'

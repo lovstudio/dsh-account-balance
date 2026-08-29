@@ -3,11 +3,11 @@
  * card. Every number is normalized at the Host boundary (strings become
  * numbers, NaN/undefined fall to 0) so the lossless Remote JSON never carries
  * an undefined field.
- * @module @lovstudio/dsh-task-pulse/types
+ * @module @lovstudio/dsh-account-balance/types
  */
 
 /** One quota window (the 5-hour window or the weekly allowance). */
-export interface TaskPulseWindow {
+export interface AccountBalanceWindow {
   /** Percentage of the window already consumed, 0..100. */
   readonly pct: number
   /** Units consumed inside the window. */
@@ -19,24 +19,24 @@ export interface TaskPulseWindow {
 }
 
 /** Provider row health vocabulary. */
-export type TaskPulseRowStatus = 'ok' | 'no-key' | 'no-data' | 'error'
+export type AccountBalanceRowStatus = 'ok' | 'no-key' | 'no-data' | 'error'
 
 /** Two-window provider row (GLM / KIMI). */
-export interface TaskPulseWindowsRow {
+export interface AccountBalanceWindowsRow {
   readonly mode: 'windows'
-  readonly status: TaskPulseRowStatus
+  readonly status: AccountBalanceRowStatus
   readonly windows: {
     /** The 5-hour rolling window. */
-    readonly w5: TaskPulseWindow
+    readonly w5: AccountBalanceWindow
     /** The weekly allowance. */
-    readonly week: TaskPulseWindow
+    readonly week: AccountBalanceWindow
   }
 }
 
 /** Remaining-balance provider row (OpenRouter / DeepSeek). */
-export interface TaskPulseBalanceRow {
+export interface AccountBalanceBalanceRow {
   readonly mode: 'balance'
-  readonly status: TaskPulseRowStatus
+  readonly status: AccountBalanceRowStatus
   /** Remaining balance in the provider's own currency units. */
   readonly balance: number
   /** Wire status label (mirrors `status`; kept for a stable field set). */
@@ -44,22 +44,22 @@ export interface TaskPulseBalanceRow {
 }
 
 /** One provider row, shaped by mode. */
-export type TaskPulseProviderRow = TaskPulseWindowsRow | TaskPulseBalanceRow
+export type AccountBalanceProviderRow = AccountBalanceWindowsRow | AccountBalanceBalanceRow
 
 /** Four-provider quota snapshot. */
-export interface TaskPulseQuotaSnapshot {
+export interface AccountBalanceQuotaSnapshot {
   /** Epoch milliseconds when the snapshot was produced. */
   readonly at: number
   readonly rows: {
-    readonly glm: TaskPulseWindowsRow
-    readonly kimi: TaskPulseWindowsRow
-    readonly or: TaskPulseBalanceRow
-    readonly ds: TaskPulseBalanceRow
+    readonly glm: AccountBalanceWindowsRow
+    readonly kimi: AccountBalanceWindowsRow
+    readonly or: AccountBalanceBalanceRow
+    readonly ds: AccountBalanceBalanceRow
   }
 }
 
 /** Live process status: distinct live sessions and running background jobs. */
-export interface TaskPulseStatusSnapshot {
+export interface AccountBalanceStatusSnapshot {
   /** Distinct live session ids across the whole process. */
   readonly sessions: number
   /** Background jobs currently in the `running` state. */

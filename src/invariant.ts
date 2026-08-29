@@ -1,13 +1,13 @@
-/** Package-owned invariant companion. @module @lovstudio/dsh-task-pulse/invariant */
+/** Package-owned invariant companion. @module @lovstudio/dsh-account-balance/invariant */
 
 /* jscpd:ignore-start */
 import type { Context } from '@deepseek-ai/cordis'
 import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
 
-const PACKAGE_NAME = '@lovstudio/dsh-task-pulse'
+const PACKAGE_NAME = '@lovstudio/dsh-account-balance'
 
 /** Cordis companion plugin name. */
-export const name = 'task-pulse-invariant'
+export const name = 'account-balance-invariant'
 /** Service required before the companion can reserve package ownership. */
 export const inject = ['invariants']
 

@@ -5,7 +5,7 @@ import { defineConfig } from 'tsdown'
  * package requests (type-only imports are erased and never reach this list).
  * Every other dependency (zod for the generated Remote codecs, …) must inline
  * — a require() the loader table cannot answer is a guaranteed runtime throw.
- * Runs after the Host pass so `@lovstudio/dsh-task-pulse/remote` (the
+ * Runs after the Host pass so `@lovstudio/dsh-account-balance/remote` (the
  * generated Typert client artifact) can be inlined. */
 const MODULE_TABLE_EXTERNALS = [
   'react',
@@ -37,7 +37,7 @@ export default defineConfig({
   },
   outputOptions: {
     entryFileNames: 'client.js',
-    banner: 'window.__ModuleLoader__.load({ id: "@lovstudio/dsh-task-pulse", factory: (require) => {',
+    banner: 'window.__ModuleLoader__.load({ id: "@lovstudio/dsh-account-balance", factory: (require) => {',
     intro: 'var module = { exports: {} }; var exports = module.exports;',
     footer: 'return module.exports; } });',
   },

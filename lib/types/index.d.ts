@@ -1,25 +1,25 @@
 /**
- * Task-pulse Host half: two Typert Remote faces over the live process and the
+ * Account-balance Host half: two Typert Remote faces over the live process and the
  * four provider quota endpoints.
  *
- * `taskPulse.status` is a pure in-memory snapshot (`agents.list()` +
+ * `accountBalance.status` is a pure in-memory snapshot (`agents.list()` +
  * `jobs.list()`); it never touches session logs, so the 3-second browser poll
  * stays sub-millisecond on the Host and cannot stall a user message.
- * `taskPulse.quotas` fans the four provider requests out in parallel and
+ * `accountBalance.quotas` fans the four provider requests out in parallel and
  * caches the result for 55 seconds; every external number is normalized at
  * the wire boundary and rows are shaped strictly by mode, so the Remote JSON
  * never carries an undefined field. Credentials resolve per operation through
  * `ctx.credentials` and never leave the Host.
- * @module @lovstudio/dsh-task-pulse
+ * @module @lovstudio/dsh-account-balance
  */
 import type { Context } from '@deepseek-ai/cordis';
 import { TypertRemoteService } from '@deepseek-ai/dsh-typert-protocol';
-import type { TaskPulseQuotaSnapshot, TaskPulseStatusSnapshot } from './types.ts';
+import type { AccountBalanceQuotaSnapshot, AccountBalanceStatusSnapshot } from './types.ts';
 export type * from './types.ts';
 /** Cordis plugin name used by loader diagnostics. */
-export declare const name = "task-pulse";
-/** Host Remote face for the task-pulse card. */
-export declare class TaskPulseService extends TypertRemoteService {
+export declare const name = "account-balance";
+/** Host Remote face for the account-balance card. */
+export declare class AccountBalanceService extends TypertRemoteService {
     private cache;
     /**
      * @param ctx - host context.
@@ -30,12 +30,12 @@ export declare class TaskPulseService extends TypertRemoteService {
      * In-memory only — never a session-log scan.
      * @returns the current snapshot.
      */
-    status(): TaskPulseStatusSnapshot;
+    status(): AccountBalanceStatusSnapshot;
     /**
      * Four-provider quota snapshot, cached for 55 seconds.
      * @returns the fresh or cached snapshot.
      */
-    quotas(): Promise<TaskPulseQuotaSnapshot>;
+    quotas(): Promise<AccountBalanceQuotaSnapshot>;
     /** Resolve one provider credential, or `undefined` while unconfigured. */
     private resolveKey;
     /** One authenticated GET, parsed as JSON, bounded by a timeout. */
@@ -52,7 +52,7 @@ export declare class TaskPulseService extends TypertRemoteService {
     private fetchDeepSeek;
 }
 /**
- * Mount the Remote service; constructing it registers the `taskPulse`
+ * Mount the Remote service; constructing it registers the `accountBalance`
  * contribution on this fiber and releases it on unload.
  * @param ctx - host context.
  */

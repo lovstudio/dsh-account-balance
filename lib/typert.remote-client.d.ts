@@ -3,19 +3,19 @@ import type {
   RemoteResult,
   TypertRemoteContribution,
 } from '@deepseek-ai/dsh-typert-protocol'
-import type { TaskPulseQuotaSnapshot, TaskPulseStatusSnapshot } from '@lovstudio/dsh-task-pulse/types'
+import type { AccountBalanceQuotaSnapshot, AccountBalanceStatusSnapshot } from '@lovstudio/dsh-account-balance/types'
 
 declare module '@deepseek-ai/dsh-typert-protocol' {
-  interface TypertRemoteNamespace$7461736b50756c7365 {
-    quotas: () => Promise<RemoteResult<TaskPulseQuotaSnapshot>>
-    status: () => Promise<RemoteResult<TaskPulseStatusSnapshot>>
+  interface TypertRemoteNamespace$6163636f756e7442616c616e6365 {
+    quotas: () => Promise<RemoteResult<AccountBalanceQuotaSnapshot>>
+    status: () => Promise<RemoteResult<AccountBalanceStatusSnapshot>>
   }
   interface TypertRemoteMap {
-    'taskPulse/quotas': () => Promise<RemoteResult<TaskPulseQuotaSnapshot>>
-    'taskPulse/status': () => Promise<RemoteResult<TaskPulseStatusSnapshot>>
+    'accountBalance/quotas': () => Promise<RemoteResult<AccountBalanceQuotaSnapshot>>
+    'accountBalance/status': () => Promise<RemoteResult<AccountBalanceStatusSnapshot>>
   }
   interface TypertRemoteNamespaceMap {
-    'taskPulse': TypertRemoteNamespace$7461736b50756c7365
+    'accountBalance': TypertRemoteNamespace$6163636f756e7442616c616e6365
   }
 }
 

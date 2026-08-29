@@ -1,4 +1,4 @@
-# @lovstudio/dsh-task-pulse
+# @lovstudio/dsh-account-balance
 
 English | [中文](README.zh.md)
 
@@ -13,8 +13,8 @@ pins into the root `shell.overlay` seat and shows, across the whole process:
 - OpenRouter (US$) and DeepSeek (¥) remaining balances, polled every 60
   seconds through a 55-second Host cache.
 
-The Host half exposes two Typert Remote faces — `taskPulse.status` and
-`taskPulse.quotas`. `status` is a pure in-memory snapshot over
+The Host half exposes two Typert Remote faces — `accountBalance.status` and
+`accountBalance.quotas`. `status` is a pure in-memory snapshot over
 `ctx.agents.list()` and `ctx.jobs.list()`; it never scans session logs, so the
 3-second browser poll stays sub-millisecond and cannot stall a user message.
 `quotas` fans the four provider requests out in parallel and caches the result
@@ -26,12 +26,12 @@ rows are shaped strictly by mode, so the Remote JSON never carries an
 
 ## Service API
 
-### `taskPulse.status(): Promise<RemoteResult<TaskPulseStatusSnapshot>>`
+### `accountBalance.status(): Promise<RemoteResult<AccountBalanceStatusSnapshot>>`
 
 Live process status: `{ sessions, tasks }` — distinct live session ids and
 background jobs currently in the `running` state.
 
-### `taskPulse.quotas(): Promise<RemoteResult<TaskPulseQuotaSnapshot>>`
+### `accountBalance.quotas(): Promise<RemoteResult<AccountBalanceQuotaSnapshot>>`
 
 Four-provider snapshot: `{ at, rows: { glm, kimi, or, ds } }`. Window rows
 (`glm`, `kimi`) carry `mode: 'windows'` with `windows.w5` and `windows.week`;

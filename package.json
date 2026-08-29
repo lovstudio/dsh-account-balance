@@ -1,10 +1,10 @@
 {
-  "name": "@lovstudio/dsh-task-pulse",
-  "description": "DeepSeek Harness global task-pulse card: live session/job status plus GLM / KIMI quota windows and OpenRouter / DeepSeek balances, pinned to the shell overlay bottom-right",
+  "name": "@lovstudio/dsh-account-balance",
+  "description": "DeepSeek Harness global account-balance card: live session/job status plus GLM / KIMI quota windows and OpenRouter / DeepSeek balances, pinned to the shell overlay bottom-right",
   "version": "0.1.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lovstudio/dsh-task-pulse.git"
+    "url": "git+https://github.com/lovstudio/dsh-account-balance.git"
   },
   "type": "module",
   "main": "lib/index.js",
@@ -55,7 +55,7 @@
     "deepseek-harness",
     "dsh",
     "dsh-plugin",
-    "task-pulse",
+    "account-balance",
     "quota",
     "status",
     "cordis"

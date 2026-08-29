@@ -1,30 +1,30 @@
 /**
- * Task-pulse Host half: two Typert Remote faces over the live process and the
+ * Account-balance Host half: two Typert Remote faces over the live process and the
  * four provider quota endpoints.
  *
- * `taskPulse.status` is a pure in-memory snapshot (`agents.list()` +
+ * `accountBalance.status` is a pure in-memory snapshot (`agents.list()` +
  * `jobs.list()`); it never touches session logs, so the 3-second browser poll
  * stays sub-millisecond on the Host and cannot stall a user message.
- * `taskPulse.quotas` fans the four provider requests out in parallel and
+ * `accountBalance.quotas` fans the four provider requests out in parallel and
  * caches the result for 55 seconds; every external number is normalized at
  * the wire boundary and rows are shaped strictly by mode, so the Remote JSON
  * never carries an undefined field. Credentials resolve per operation through
  * `ctx.credentials` and never leave the Host.
- * @module @lovstudio/dsh-task-pulse
+ * @module @lovstudio/dsh-account-balance
  */
 
 import type { Context } from '@deepseek-ai/cordis'
 import { credentialRef, type CredentialRef } from '@deepseek-ai/dsh-credentials'
 import { Remote, TypertRemoteService } from '@deepseek-ai/dsh-typert-protocol'
 import type {
-  TaskPulseBalanceRow, TaskPulseQuotaSnapshot, TaskPulseRowStatus,
-  TaskPulseStatusSnapshot, TaskPulseWindow, TaskPulseWindowsRow,
+  AccountBalanceBalanceRow, AccountBalanceQuotaSnapshot, AccountBalanceRowStatus,
+  AccountBalanceStatusSnapshot, AccountBalanceWindow, AccountBalanceWindowsRow,
 } from './types.ts'
 
 export type * from './types.ts'
 
 /** Cordis plugin name used by loader diagnostics. */
-export const name = 'task-pulse'
+export const name = 'account-balance'
 
 /** Provider quota endpoints, queried with the provider's bearer credential. */
 const GLM_QUOTA_URL = 'https://open.bigmodel.cn/api/monitor/usage/quota/limit'
@@ -67,7 +67,7 @@ function resetTimeOf(value: unknown): number {
 }
 
 /** Project one provider window object onto the client-safe shape. */
-function windowOf(raw: unknown): TaskPulseWindow {
+function windowOf(raw: unknown): AccountBalanceWindow {
   if (raw === null || typeof raw !== 'object') return { pct: 0, used: 0, remaining: 0, resetAt: 0 }
   const row = raw as Record<string, unknown>
   let pct = toNumber(row.percentage ?? row.percent)
@@ -82,25 +82,25 @@ function windowOf(raw: unknown): TaskPulseWindow {
 }
 
 /** Empty window used for non-ok rows. */
-const EMPTY_WINDOW: TaskPulseWindow = { pct: 0, used: 0, remaining: 0, resetAt: 0 }
+const EMPTY_WINDOW: AccountBalanceWindow = { pct: 0, used: 0, remaining: 0, resetAt: 0 }
 
-function windowsRow(status: TaskPulseRowStatus, w5: TaskPulseWindow, week: TaskPulseWindow): TaskPulseWindowsRow {
+function windowsRow(status: AccountBalanceRowStatus, w5: AccountBalanceWindow, week: AccountBalanceWindow): AccountBalanceWindowsRow {
   return { mode: 'windows', status, windows: { w5, week } }
 }
 
-function balanceRow(status: TaskPulseRowStatus, balance = 0): TaskPulseBalanceRow {
+function balanceRow(status: AccountBalanceRowStatus, balance = 0): AccountBalanceBalanceRow {
   return { mode: 'balance', status, balance, detail: status }
 }
 
-/** Host Remote face for the task-pulse card. */
-export class TaskPulseService extends TypertRemoteService {
-  private cache: { at: number; data: TaskPulseQuotaSnapshot | null }
+/** Host Remote face for the account-balance card. */
+export class AccountBalanceService extends TypertRemoteService {
+  private cache: { at: number; data: AccountBalanceQuotaSnapshot | null }
 
   /**
    * @param ctx - host context.
    */
   constructor(ctx: Context) {
-    super(ctx, 'taskPulse')
+    super(ctx, 'accountBalance')
     this.cache = { at: 0, data: null }
   }
 
@@ -110,7 +110,7 @@ export class TaskPulseService extends TypertRemoteService {
    * @returns the current snapshot.
    */
   @Remote('status')
-  status(): TaskPulseStatusSnapshot {
+  status(): AccountBalanceStatusSnapshot {
     const agents = this.ctx.get('agents')
     const jobs = this.ctx.get('jobs')
     const seen = new Set<string>()
@@ -134,13 +134,13 @@ export class TaskPulseService extends TypertRemoteService {
    * @returns the fresh or cached snapshot.
    */
   @Remote('quotas')
-  async quotas(): Promise<TaskPulseQuotaSnapshot> {
+  async quotas(): Promise<AccountBalanceQuotaSnapshot> {
     const now = Date.now()
     if (this.cache.data !== null && now - this.cache.at < QUOTA_CACHE_MS) return this.cache.data
     const [glm, kimi, or, ds] = await Promise.all([
       this.fetchGlm(), this.fetchKimi(), this.fetchOpenRouter(), this.fetchDeepSeek(),
     ])
-    const data: TaskPulseQuotaSnapshot = { at: now, rows: { glm, kimi, or, ds } }
+    const data: AccountBalanceQuotaSnapshot = { at: now, rows: { glm, kimi, or, ds } }
     this.cache = { at: now, data }
     return data
   }
@@ -159,13 +159,13 @@ export class TaskPulseService extends TypertRemoteService {
       headers: { authorization: `Bearer ${key}` },
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     })
-    if (!response.ok) throw new Error(`task-pulse: ${url} failed with HTTP ${String(response.status)}`)
+    if (!response.ok) throw new Error(`account-balance: ${url} failed with HTTP ${String(response.status)}`)
     return response.json() as Promise<unknown>
   }
 
   /** GLM: `data.limits[]`, `unit === 3 && number === 5` is the 5-hour window,
    * `unit === 6 && number === 1` the weekly allowance. */
-  private async fetchGlm(): Promise<TaskPulseWindowsRow> {
+  private async fetchGlm(): Promise<AccountBalanceWindowsRow> {
     try {
       const key = await this.resolveKey(PROVIDER_CREDENTIALS.glm)
       if (key === undefined) return windowsRow('no-key', EMPTY_WINDOW, EMPTY_WINDOW)
@@ -189,7 +189,7 @@ export class TaskPulseService extends TypertRemoteService {
 
   /** KIMI: `usage` is the weekly allowance, `limits[0].detail` the 5-hour
    * window; string numbers and ISO reset timestamps are normalized. */
-  private async fetchKimi(): Promise<TaskPulseWindowsRow> {
+  private async fetchKimi(): Promise<AccountBalanceWindowsRow> {
     try {
       const key = await this.resolveKey(PROVIDER_CREDENTIALS.kimi)
       if (key === undefined) return windowsRow('no-key', EMPTY_WINDOW, EMPTY_WINDOW)
@@ -206,7 +206,7 @@ export class TaskPulseService extends TypertRemoteService {
   }
 
   /** OpenRouter: remaining credits = `total_credits - total_usage`. */
-  private async fetchOpenRouter(): Promise<TaskPulseBalanceRow> {
+  private async fetchOpenRouter(): Promise<AccountBalanceBalanceRow> {
     try {
       const key = await this.resolveKey(PROVIDER_CREDENTIALS.or)
       if (key === undefined) return balanceRow('no-key')
@@ -221,7 +221,7 @@ export class TaskPulseService extends TypertRemoteService {
   }
 
   /** DeepSeek: `balance_infos[0].total_balance`. */
-  private async fetchDeepSeek(): Promise<TaskPulseBalanceRow> {
+  private async fetchDeepSeek(): Promise<AccountBalanceBalanceRow> {
     try {
       const key = await this.resolveKey(PROVIDER_CREDENTIALS.ds)
       if (key === undefined) return balanceRow('no-key')
@@ -237,12 +237,12 @@ export class TaskPulseService extends TypertRemoteService {
 }
 
 /**
- * Mount the Remote service; constructing it registers the `taskPulse`
+ * Mount the Remote service; constructing it registers the `accountBalance`
  * contribution on this fiber and releases it on unload.
  * @param ctx - host context.
  */
 // Function-plugin form: the loader never instantiates a default export, so
 // the service is constructed here and released with this fiber.
 export function apply(ctx: Context): void {
-  new TaskPulseService(ctx)
+  new AccountBalanceService(ctx)
 }
