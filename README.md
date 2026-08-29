@@ -1,0 +1,77 @@
+# @lovstudio/dsh-task-pulse
+
+English | [中文](README.zh.md)
+
+A persistent bottom-right status card for the DeepSeek Harness web surface. It
+pins into the root `shell.overlay` seat and shows, across the whole process:
+
+- a status dot plus 「空闲 / N 会话 · M 任务」 (idle, or live session and running
+  background-job counts), polled every 3 seconds;
+- GLM / KIMI rows with two 5px quota bars — the 5-hour window and the weekly
+  allowance — colored green (<50%), orange (≥50%) or red (≥80%) with a hover
+  tooltip showing usage, remaining, and the reset countdown;
+- OpenRouter (US$) and DeepSeek (¥) remaining balances, polled every 60
+  seconds through a 55-second Host cache.
+
+The Host half exposes two Typert Remote faces — `taskPulse.status` and
+`taskPulse.quotas`. `status` is a pure in-memory snapshot over
+`ctx.agents.list()` and `ctx.jobs.list()`; it never scans session logs, so the
+3-second browser poll stays sub-millisecond and cannot stall a user message.
+`quotas` fans the four provider requests out in parallel and caches the result
+for 55 seconds; every external number is normalized at the wire boundary and
+rows are shaped strictly by mode, so the Remote JSON never carries an
+`undefined` field. Provider credentials resolve per operation through
+`ctx.credentials` (`ZAI_CODING_CN_API_KEY`, `KIMI_CODING_API_KEY`,
+`OPENROUTER_API_KEY`, `DEEPSEEK_API_KEY`) and never leave the Host.
+
+## Service API
+
+### `taskPulse.status(): Promise<RemoteResult<TaskPulseStatusSnapshot>>`
+
+Live process status: `{ sessions, tasks }` — distinct live session ids and
+background jobs currently in the `running` state.
+
+### `taskPulse.quotas(): Promise<RemoteResult<TaskPulseQuotaSnapshot>>`
+
+Four-provider snapshot: `{ at, rows: { glm, kimi, or, ds } }`. Window rows
+(`glm`, `kimi`) carry `mode: 'windows'` with `windows.w5` and `windows.week`;
+balance rows (`or`, `ds`) carry `mode: 'balance'` with `balance` and `detail`.
+Every row carries a `status` of `ok` | `no-key` | `no-data` | `error`.
+
+## Config
+
+No configuration. The four provider credentials are read from the credential
+service by reference; a missing key renders the row as 「—」 with a tooltip
+reason.
+
+## Extension points
+
+None — the card is a leaf surface. Consumers may read the same two Remote
+faces for their own status/quota displays.
+
+## Model Experience
+
+### What the model sees
+
+Nothing. The card is browser-only UI; both Remote calls run outside model
+turns and their results never enter a prompt.
+
+### Token effect
+
+Zero — the plugin performs no model calls.
+
+### KV Cache effect
+
+None — no prompt prefix is contributed.
+
+## Known Limitations and Deferred Work
+
+- **`jobs.list()` visibility** — the Host status handler lists jobs without a
+  caller, so jobs owned by another session may not be counted as `tasks`;
+  unowned and visible jobs are counted.
+- **Quota shape drift** — GLM and KIMI wire formats are extracted
+  defensively; an API shape change surfaces as `no-data` rows rather than a
+  crash.
+- **Page reload / restart** — the plugin is a composition row, so it survives
+  both once installed; before install it behaves like any other plugin package
+  in this workspace.

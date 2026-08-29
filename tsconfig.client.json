@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "target": "es2024",
+    "lib": ["es2024", "dom"],
+    "strict": true,
+    "noImplicitAny": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "jsx": "react",
+    "allowImportingTsExtensions": true,
+    "types": ["react"]
+  },
+  "include": [
+    "src/client"
+  ]
+}
