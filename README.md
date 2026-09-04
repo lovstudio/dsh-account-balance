@@ -44,6 +44,23 @@ No configuration. The four provider credentials are read from the credential
 service by reference; a missing key renders the row as 「—」 with a tooltip
 reason.
 
+## Local development
+
+Install dependencies and keep the Host and Client artifacts current from this
+repository:
+
+```sh
+pnpm install
+pnpm run watch
+```
+
+Mount the checkout into an isolated development profile rather than editing the
+DeepSeek Harness workspace or the default `~/.dsh` profile:
+
+```sh
+DSH_HOME=/Users/mark/.dsh-lov-dev pnpm --dir /path/to/deepseek-harness dsh plugin --profile web add link:/path/to/dsh-account-balance
+```
+
 ## Extension points
 
 None — the card is a leaf surface. Consumers may read the same two Remote

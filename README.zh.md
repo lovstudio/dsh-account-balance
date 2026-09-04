@@ -24,6 +24,21 @@ Host 半边暴露两个 Typert Remote：`accountBalance.status` 与 `accountBala
 
 无。四个 provider 密钥按引用从 credential 服务读取；缺少密钥时该行显示「—」并在悬停提示原因。
 
+## 本地开发
+
+在本仓库安装依赖，并持续更新 Host 与 Client 产物：
+
+```sh
+pnpm install
+pnpm run watch
+```
+
+把当前 checkout 挂载到隔离开发 profile，不修改 DeepSeek Harness 工作区或默认 `~/.dsh` profile：
+
+```sh
+DSH_HOME=/Users/mark/.dsh-lov-dev pnpm --dir /path/to/deepseek-harness dsh plugin --profile web add link:/path/to/dsh-account-balance
+```
+
 ## 扩展点
 
 无——卡片是叶子界面。其它消费者可直接复用这两个 Remote 做自己的状态/配额展示。

@@ -34,10 +34,12 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "bundle": "tsc && tsdown && tsdown -c tsdown.client.config.ts",
+    "build": "tsc && tsdown && tsdown -c tsdown.client.config.ts",
+    "bundle": "pnpm run build",
     "gen:typert": "cd ../.typert-build && node gen.mjs",
-    "watch": "tsdown --watch",
-    "typecheck": "tsc --noEmit && tsc -p tsconfig.client.json --noEmit"
+    "watch": "concurrently -k \"tsc --watch --preserveWatchOutput\" \"tsdown --watch\" \"tsdown -c tsdown.client.config.ts --watch\"",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.client.json --noEmit",
+    "prepack": "pnpm run build"
   },
   "files": [
     "lib/index.js",
@@ -67,9 +69,9 @@
     "zod": "^4.4.3"
   },
   "peerDependencies": {
-    "@deepseek-ai/cordis": "^4.0.1",
-    "@deepseek-ai/dsh-credentials": "^0.1.0-rc.8",
-    "@deepseek-ai/dsh-typert-protocol": "^0.1.0-rc.8"
+    "@deepseek-ai/cordis": "^4.0.2",
+    "@deepseek-ai/dsh-credentials": "0.1.2-alpha.2",
+    "@deepseek-ai/dsh-typert-protocol": "0.1.2-alpha.2"
   },
   "peerDependenciesMeta": {
     "@deepseek-ai/dsh-credentials": {
@@ -80,17 +82,17 @@
     }
   },
   "devDependencies": {
-    "@deepseek-ai/cordis": "^4.0.1",
-    "@deepseek-ai/dsh-api-remotes": "^0.1.0-rc.8",
-    "@deepseek-ai/dsh-client-runtime": "^0.1.0-rc.8",
-    "@deepseek-ai/dsh-client-ui-layout": "^0.1.0-rc.8",
-    "@deepseek-ai/dsh-client-ui-slots": "^0.1.0-rc.8",
-    "@deepseek-ai/dsh-credentials": "^0.1.0-rc.8",
-    "@deepseek-ai/dsh-invariants": "^0.0.1-rc.1",
-    "@deepseek-ai/dsh-typert-generator": "0.1.0-rc.6",
-    "@deepseek-ai/dsh-typert-protocol": "^0.1.0-rc.8",
+    "@deepseek-ai/cordis": "^4.0.2",
+    "@deepseek-ai/dsh-api-remotes": "0.1.2-alpha.2",
+    "@deepseek-ai/dsh-client-ui-layout": "0.1.2-alpha.2",
+    "@deepseek-ai/dsh-client-ui-slots": "0.1.2-alpha.2",
+    "@deepseek-ai/dsh-credentials": "0.1.2-alpha.2",
+    "@deepseek-ai/dsh-invariants": "0.1.2-alpha.2",
+    "@deepseek-ai/dsh-typert-generator": "0.1.2-alpha.2",
+    "@deepseek-ai/dsh-typert-protocol": "0.1.2-alpha.2",
     "@types/node": "^24.0.0",
     "@types/react": "~18.3.1",
+    "concurrently": "^9.2.1",
     "react": "^18.2.0",
     "tsdown": "^0.22.14",
     "typescript": "^7.0.2"
@@ -102,7 +104,6 @@
     "client": {
       "inject": [
         "@deepseek-ai/dsh-api-remotes",
-        "@deepseek-ai/dsh-client-runtime",
         "@deepseek-ai/dsh-client-ui-layout"
       ],
       "platform": "web"
