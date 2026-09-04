@@ -32,10 +32,15 @@ export async function apply(ctx: ClientContext): Promise<void> {
   const disposeRemote = await ctx.remote.$mount(accountBalanceRemote)
   ctx.effect(() => disposeRemote, 'ui-account-balance: Remote contribution')
   ctx.effect(() => injectAccountBalanceStyles(ACCOUNT_BALANCE_STYLES), 'ui-account-balance: card styles')
-  ctx.slots.inject('shell.overlay', () => ctx.slots.register({
-    name: 'shell.overlay',
-    id: 'account-balance',
-    order: 40,
-    inject: (): AccountBalanceCardProps => ({ accountBalance: ctx.remote.accountBalance }),
-  }, AccountBalanceCard))
+  // The Remote face this plugin just mounted must be injected before it is
+  // read: cordis refuses `ctx.remote.accountBalance` from a scope that did not
+  // declare it, and the overlay slot then crashes silently.
+  await ctx.inject(['remote.accountBalance'], (scope: ClientContext) => {
+    scope.slots.inject('shell.overlay', () => scope.slots.register({
+      name: 'shell.overlay',
+      id: 'account-balance',
+      order: 40,
+      inject: (): AccountBalanceCardProps => ({ accountBalance: scope.remote.accountBalance }),
+    }, AccountBalanceCard))
+  })
 }

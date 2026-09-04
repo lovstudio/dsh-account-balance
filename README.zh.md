@@ -19,14 +19,14 @@ Host 半边暴露两个 Typert Remote：`accountBalance.status` 与 `accountBala
 ```sh
 git clone --depth 1 --branch dsh-v0.1.2-rc.1 https://github.com/deepseek-ai/deepseek-harness.git
 cd deepseek-harness && pnpm install && pnpm run build
-pnpm dsh plugin --profile web add github:lovstudio/dsh-account-balance#v0.1.1
+pnpm dsh plugin --profile web add github:lovstudio/dsh-account-balance#v0.1.2
 pnpm dsh web
 ```
 
 **不 clone（npx，只有编译后的 harness）：**
 
 ```sh
-npx @deepseek-ai/dsh plugin --profile web add github:lovstudio/dsh-account-balance#v0.1.1
+npx @deepseek-ai/dsh plugin --profile web add github:lovstudio/dsh-account-balance#v0.1.2
 npx @deepseek-ai/dsh web
 ```
 

@@ -1,7 +1,7 @@
 {
   "name": "@lovstudio/dsh-account-balance",
   "description": "DeepSeek Harness global account-balance card: live session/job status plus GLM / KIMI quota windows and OpenRouter / DeepSeek balances, pinned to the shell overlay bottom-right",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lovstudio/dsh-account-balance.git"
