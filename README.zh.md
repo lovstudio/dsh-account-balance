@@ -10,6 +10,17 @@ DeepSeek Harness Web 界面右下角常驻的任务状态卡片。它挂在根 `
 
 Host 半边暴露两个 Typert Remote：`accountBalance.status` 与 `accountBalance.quotas`。`status` 是纯内存快照（`ctx.agents.list()` + `ctx.jobs.list()`），绝不扫描会话日志，因此 3 秒轮询在 Host 侧亚毫秒级返回，不会卡住用户消息。`quotas` 将四个 provider 请求并行发出并缓存 55 秒；所有外部数值在 wire 边界归一化，行对象严格按 mode 定形，Remote JSON 永不携带 `undefined` 字段。provider 密钥每次操作经 `ctx.credentials` 解析（`ZAI_CODING_CN_API_KEY`、`KIMI_CODING_API_KEY`、`OPENROUTER_API_KEY`、`DEEPSEEK_API_KEY`），绝不离开 Host。
 
+## 安装
+
+前置条件：Node.js 22+ 与 pnpm（`npm i -g pnpm`）——`dsh plugin` 会在 profile 目录内调用 pnpm。
+
+```sh
+npx @deepseek-ai/dsh plugin --profile web add github:lovstudio/dsh-account-balance#v0.1.1
+npx @deepseek-ai/dsh web
+```
+
+`web` 就是 `dsh web` 启动的 profile。tag 固定到一个 `lib/` 已预构建并提交的 commit，本机不会编译任何东西。已在 `@deepseek-ai/dsh@0.1.2-rc.1` 上验证。卸载：`npx @deepseek-ai/dsh plugin --profile web remove @lovstudio/dsh-account-balance`。
+
 ## 服务 API
 
 ### `accountBalance.status(): Promise<RemoteResult<AccountBalanceStatusSnapshot>>`

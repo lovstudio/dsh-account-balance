@@ -24,6 +24,17 @@ rows are shaped strictly by mode, so the Remote JSON never carries an
 `ctx.credentials` (`ZAI_CODING_CN_API_KEY`, `KIMI_CODING_API_KEY`,
 `OPENROUTER_API_KEY`, `DEEPSEEK_API_KEY`) and never leave the Host.
 
+## Install
+
+Prerequisites: Node.js 22+ and pnpm (`npm i -g pnpm`) — `dsh plugin` forwards to pnpm inside the profile directory.
+
+```sh
+npx @deepseek-ai/dsh plugin --profile web add github:lovstudio/dsh-account-balance#v0.1.1
+npx @deepseek-ai/dsh web
+```
+
+`web` is the profile `dsh web` boots. The tag pins a commit whose `lib/` is prebuilt and committed, so nothing is compiled on your machine. Verified against `@deepseek-ai/dsh@0.1.2-rc.1`. Remove with `npx @deepseek-ai/dsh plugin --profile web remove @lovstudio/dsh-account-balance`.
+
 ## Service API
 
 ### `accountBalance.status(): Promise<RemoteResult<AccountBalanceStatusSnapshot>>`
