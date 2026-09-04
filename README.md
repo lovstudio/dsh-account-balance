@@ -33,14 +33,14 @@ Prerequisites: Node.js 22.19+ or 24+, pnpm 11 (`corepack enable` or `npm i -g pn
 ```sh
 git clone --depth 1 --branch dsh-v0.1.2-rc.1 https://github.com/deepseek-ai/deepseek-harness.git
 cd deepseek-harness && pnpm install && pnpm run build
-pnpm dsh plugin --profile web add github:lovstudio/dsh-account-balance#v0.1.2
+pnpm dsh plugin --profile web add -w github:lovstudio/dsh-account-balance#v0.1.2
 pnpm dsh web
 ```
 
 **Without a checkout (npx; compiled harness only):**
 
 ```sh
-npx @deepseek-ai/dsh plugin --profile web add github:lovstudio/dsh-account-balance#v0.1.2
+npx @deepseek-ai/dsh plugin --profile web add -w github:lovstudio/dsh-account-balance#v0.1.2
 npx @deepseek-ai/dsh web
 ```
 
@@ -80,7 +80,7 @@ Mount the checkout into an isolated development profile rather than editing the
 DeepSeek Harness workspace or the default `~/.dsh` profile:
 
 ```sh
-DSH_HOME=/Users/mark/.dsh-lov-dev pnpm --dir /path/to/deepseek-harness dsh plugin --profile web add link:/path/to/dsh-account-balance
+DSH_HOME=/Users/mark/.dsh-lov-dev pnpm --dir /path/to/deepseek-harness dsh plugin --profile web add -w link:/path/to/dsh-account-balance
 ```
 
 ## Extension points
