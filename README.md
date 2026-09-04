@@ -26,14 +26,25 @@ rows are shaped strictly by mode, so the Remote JSON never carries an
 
 ## Install
 
-Prerequisites: Node.js 22+ and pnpm (`npm i -g pnpm`) — `dsh plugin` forwards to pnpm inside the profile directory.
+Prerequisites: Node.js 22.19+ or 24+, pnpm 11 (`corepack enable` or `npm i -g pnpm`) — `dsh plugin` forwards to pnpm inside the profile directory.
+
+**From a DeepSeek Harness source checkout (recommended — you get the harness source too):**
+
+```sh
+git clone --depth 1 --branch dsh-v0.1.2-rc.1 https://github.com/deepseek-ai/deepseek-harness.git
+cd deepseek-harness && pnpm install && pnpm run build
+pnpm dsh plugin --profile web add github:lovstudio/dsh-account-balance#v0.1.1
+pnpm dsh web
+```
+
+**Without a checkout (npx; compiled harness only):**
 
 ```sh
 npx @deepseek-ai/dsh plugin --profile web add github:lovstudio/dsh-account-balance#v0.1.1
 npx @deepseek-ai/dsh web
 ```
 
-`web` is the profile `dsh web` boots. The tag pins a commit whose `lib/` is prebuilt and committed, so nothing is compiled on your machine. Verified against `@deepseek-ai/dsh@0.1.2-rc.1`. Remove with `npx @deepseek-ai/dsh plugin --profile web remove @lovstudio/dsh-account-balance`.
+`web` is the profile `dsh web` boots. The tag pins a commit whose `lib/` is prebuilt and committed, so nothing is compiled on your machine. Verified on 2026-09-04 against `dsh-v0.1.2-rc.1` in both forms. Remove with `dsh plugin --profile web remove @lovstudio/dsh-account-balance`.
 
 ## Service API
 

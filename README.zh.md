@@ -12,14 +12,25 @@ Host 半边暴露两个 Typert Remote：`accountBalance.status` 与 `accountBala
 
 ## 安装
 
-前置条件：Node.js 22+ 与 pnpm（`npm i -g pnpm`）——`dsh plugin` 会在 profile 目录内调用 pnpm。
+前置条件：Node.js 22.19+ 或 24+，pnpm 11（`corepack enable` 或 `npm i -g pnpm`）——`dsh plugin` 会在 profile 目录内调用 pnpm。
+
+**从 DeepSeek Harness 源码 checkout 安装（推荐，同时拿到 harness 源码）：**
+
+```sh
+git clone --depth 1 --branch dsh-v0.1.2-rc.1 https://github.com/deepseek-ai/deepseek-harness.git
+cd deepseek-harness && pnpm install && pnpm run build
+pnpm dsh plugin --profile web add github:lovstudio/dsh-account-balance#v0.1.1
+pnpm dsh web
+```
+
+**不 clone（npx，只有编译后的 harness）：**
 
 ```sh
 npx @deepseek-ai/dsh plugin --profile web add github:lovstudio/dsh-account-balance#v0.1.1
 npx @deepseek-ai/dsh web
 ```
 
-`web` 就是 `dsh web` 启动的 profile。tag 固定到一个 `lib/` 已预构建并提交的 commit，本机不会编译任何东西。已在 `@deepseek-ai/dsh@0.1.2-rc.1` 上验证。卸载：`npx @deepseek-ai/dsh plugin --profile web remove @lovstudio/dsh-account-balance`。
+`web` 就是 `dsh web` 启动的 profile。tag 固定到一个 `lib/` 已预构建并提交的 commit，本机不会编译任何东西。两种方式均已于 2026-09-04 在 `dsh-v0.1.2-rc.1` 上验证。卸载：`dsh plugin --profile web remove @lovstudio/dsh-account-balance`。
 
 ## 服务 API
 
